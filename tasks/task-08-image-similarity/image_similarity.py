@@ -113,8 +113,8 @@ def _mse(i1: np.ndarray, i2: np.ndarray) -> float:
         Mean squared error.
     """
     ### START CODE HERE ###
-    ### TODO
-    mse = None
+    diff = (i1 - i2) ** 2
+    mse = np.mean(diff)
     ### END CODE HERE ###
 
     return mse
@@ -140,8 +140,13 @@ def _psnr(i1: np.ndarray, i2: np.ndarray, data_range: float = 1.0) -> float:
         PSNR in decibels (dB), or np.inf if images are identical.
     """
     ### START CODE HERE ###
-    ### TODO
-    psnr = None
+    mse_val = _mse(i1, i2)
+    
+    if mse_val == 0:
+        psnr = np.inf
+    else:
+        # PSNR = 10 * log10( (L^2) / MSE )
+        psnr = 10 * np.log10((data_range ** 2) / mse_val)
     ### END CODE HERE ###
 
     return psnr
@@ -170,8 +175,18 @@ def _ssim(i1: np.ndarray, i2: np.ndarray, *, C1: float = 1e-8, C2: float = 1e-8)
         SSIM in approximately [-1, 1] (often near [0, 1] for natural images).
     """
     ### START CODE HERE ###
-    ### TODO
-    ssim = None
+    mu1 = np.mean(i1)
+    mu2 = np.mean(i2)
+    
+    sigma1_sq = np.var(i1)
+    sigma2_sq = np.var(i2)
+    
+    sigma12 = np.mean((i1 - mu1) * (i2 - mu2))
+    
+    numerator = (2 * mu1 * mu2 + C1) * (2 * sigma12 + C2)
+    denominator = (mu1**2 + mu2**2 + C1) * (sigma1_sq + sigma2_sq + C2)
+    
+    ssim = numerator / denominator
     ### END CODE HERE ###
 
     return ssim
@@ -199,8 +214,27 @@ def _npcc(i1: np.ndarray, i2: np.ndarray) -> float:
     """
 
     ### START CODE HERE ###
-    ### TODO
-    npcc = None
+    mu1 = np.mean(i1)
+    mu2 = np.mean(i2)
+    
+    diff1 = i1 - mu1
+    diff2 = i2 - mu2
+    
+    numerator = np.sum(diff1 * diff2)
+    
+    sum_sq1 = np.sum(diff1 ** 2)
+    sum_sq2 = np.sum(diff2 ** 2)
+    
+    if sum_sq1 == 0 and sum_sq2 == 0:
+        if np.array_equal(i1, i2):
+            npcc = 1.0
+        else:
+            npcc = 0.0
+    elif sum_sq1 == 0 or sum_sq2 == 0:
+        npcc = 0.0
+    else:
+        denominator = np.sqrt(sum_sq1 * sum_sq2)
+        npcc = numerator / denominator
     ### END CODE HERE ###
 
     return npcc
