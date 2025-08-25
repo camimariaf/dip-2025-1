@@ -23,8 +23,12 @@ def linear_combination(i1: np.ndarray, i2: np.ndarray, a1: float, a2: float) -> 
         raise ValueError("Input images must have the same dimensions.")
 
     ### START CODE HERE ###
-    ### TODO
-    i_out = None
+    i1_float = i1.astype(np.float64)
+    i2_float = i2.astype(np.float64)
+    
+    i_out_float = a1 * i1_float + a2 * i2_float
+    
+    i_out = np.clip(i_out_float, 0, 255).astype(i1.dtype)
     ### END CODE HERE ###
 
     return i_out
